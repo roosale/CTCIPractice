@@ -9,7 +9,7 @@ class TreeUnitTest {
     //          2
     //         / \
     //        1   3
-    private val balanced = Tree().apply {
+    private val balanced = Tree<Int>().apply {
         insert(2)
         insert(1)
         insert(3)
@@ -20,7 +20,7 @@ class TreeUnitTest {
     //            2
     //             \
     //              3
-    private val unbalanced = Tree().apply {
+    private val unbalanced = Tree<Int>().apply {
         insert(1)
         insert(2)
         insert(3)
@@ -64,6 +64,9 @@ class TreeUnitTest {
 
     @Test
     fun  `balance - unbalanced`() = unbalanced.run {
+        assertEquals(preOrder, "[1, 2, 3]")
+        assertEquals(inOrder, "[1, 2, 3]")
+        assertEquals(postOrder, "[3, 2, 1]")
         balance()
         assertEquals(preOrder, "[2, 1, 3]")
         assertEquals(inOrder, "[1, 2, 3]")

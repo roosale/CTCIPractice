@@ -3,12 +3,12 @@ package com.github.roosale.ctcipractice.vii
 // singly linked list with head pointer
 class LinkedList<T : Any> {
 
-    private var head: Node<T>? = null
-
     private class Node<T : Any>(
             var data: T,
             var next: Node<T>? = null
     )
+
+    private var head: Node<T>? = null
 
     // O(1)
     fun prepend(data: T) {

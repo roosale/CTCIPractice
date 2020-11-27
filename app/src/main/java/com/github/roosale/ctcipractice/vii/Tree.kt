@@ -1,118 +1,64 @@
 package com.github.roosale.ctcipractice.vii
 
 // binary search tree
-class Tree {
+class Tree<T : Comparable<T>> {
 
-    private var root: Node? = null
+    private class Node<T>(
+            var data: T,
+            var left: Node<T>? = null,
+            var right: Node<T>? = null
+    )
 
-    private class Node(
-            var data: Int,
-            var left: Node? = null,
-            var right: Node? = null
-    ) {
-
-        // unbalanced O(n) / balanced O(log n)
-        fun insert(value: Int) {
-            if (value <= data) {
-                if (left == null) {
-                    left = Node(value)
-                } else {
-                    left?.insert(value)
-                }
-            } else {
-                if (right == null) {
-                    right = Node(value)
-                } else {
-                    right?.insert(value)
-                }
-            }
-        }
-
-        // unbalanced O(n) / balanced O(log n)
-        fun contains(value: Int): Boolean {
-            if (value == data) return true
-
-            return if (value < data) {
-                left?.contains(value) ?: false
-            } else {
-                right?.contains(value) ?: false
-            }
-        }
-
-        companion object {
-
-            // O(n)
-            fun build(list: List<Int>, start: Int, end: Int): Node? {
-                // out of bounds
-                if (start > end) return null
-                // no children
-                if (start == end) return Node(list[start])
-                // has children
-                val middle = ((start + end) / 2)
-                return Node(list[middle]).apply {
-                    left = build(
-                            list = list,
-                            start = start,
-                            end = (middle - 1)
-                    )
-                    right = build(
-                            list = list,
-                            start = (middle + 1),
-                            end = end
-                    )
-                }
-            }
-
-            // O(n)
-            fun preOrder(list: MutableList<Int>, node: Node?) {
-                node?.run {
-                    list.add(this.data)
-                    left?.run { preOrder(list, this) }
-                    right?.run { preOrder(list, this) }
-                }
-            }
-
-            // O(n)
-            fun inOrder(list: MutableList<Int>, node: Node?) {
-                node?.run {
-                    left?.run { inOrder(list, this) }
-                    list.add(this.data)
-                    right?.run { inOrder(list, this) }
-                }
-            }
-
-            // O(n)
-            fun postOrder(list: MutableList<Int>, node: Node?) {
-                node?.run {
-                    left?.run { postOrder(list, this) }
-                    right?.run { postOrder(list, this) }
-                    list.add(this.data)
-                }
-            }
-
-        }
-
-    }
+    private var root: Node<T>? = null
 
     // unbalanced O(n) / balanced O(log n)
-    fun insert(value: Int) {
+    fun insert(value: T) {
         if (root == null) {
             root = Node(value)
         } else {
-            root?.insert(value)
+            insert(root, value)
+        }
+    }
+
+    private fun insert(node: Node<T>?, value: T) {
+        if (node == null) return
+
+        if (value <= node.data) {
+            if (node.left == null) {
+                node.left = Node(value)
+            } else {
+                insert(node.left, value)
+            }
+        } else {
+            if (node.right == null) {
+                node.right = Node(value)
+            } else {
+                insert(node.right, value)
+            }
         }
     }
 
     // unbalanced O(n) / balanced O(log n)
-    fun contains(value: Int): Boolean {
-        return root?.contains(value) ?: false
+    fun contains(value: T): Boolean {
+        return contains(root, value)
     }
 
-    // O(n) + O(n)
+    private fun contains(node: Node<T>?, value: T): Boolean {
+        if (node == null) return false
+        if (value == node.data) return true
+
+        return if (value < node.data) {
+            contains(node.left, value)
+        } else {
+            contains(node.right, value)
+        }
+    }
+
+    // O(n)
     fun balance() {
-        mutableListOf<Int>().also {
-            Node.inOrder(it, root)
-            root = Node.build(
+        mutableListOf<T>().also {
+            inOrder(it, root)
+            root = build(
                     list = it,
                     start = 0,
                     end = it.size - 1
@@ -120,35 +66,86 @@ class Tree {
         }
     }
 
+    private fun build(list: List<T>, start: Int, end: Int): Node<T>? {
+        // out of bounds
+        if (start > end) return null
+        // no children
+        if (start == end) return Node(list[start])
+        // has children
+        val middle = ((start + end) / 2)
+        return Node(list[middle]).apply {
+            left = build(
+                    list = list,
+                    start = start,
+                    end = (middle - 1)
+            )
+            right = build(
+                    list = list,
+                    start = (middle + 1),
+                    end = end
+            )
+        }
+    }
+
     // O(n)
     val preOrder: String
-        get() = mutableListOf<Int>()
-                .also { Node.preOrder(it, root) }
-                .joinToString(
-                        separator = ", ",
-                        prefix = "[",
-                        postfix = "]"
-                )
+        get() {
+            return mutableListOf<T>()
+                    .also { preOrder(it, root) }
+                    .joinToString(
+                            separator = ", ",
+                            prefix = "[",
+                            postfix = "]"
+                    )
+        }
+
+    private fun preOrder(list: MutableList<T>, node: Node<T>?) {
+        node?.run {
+            list.add(this.data)
+            left?.run { preOrder(list, this) }
+            right?.run { preOrder(list, this) }
+        }
+    }
 
     // O(n)
     val inOrder: String
-        get() = mutableListOf<Int>()
-                .also { Node.inOrder(it, root) }
-                .joinToString(
-                        separator = ", ",
-                        prefix = "[",
-                        postfix = "]"
-                )
+        get() {
+            return mutableListOf<T>()
+                    .also { inOrder(it, root) }
+                    .joinToString(
+                            separator = ", ",
+                            prefix = "[",
+                            postfix = "]"
+                    )
+        }
+
+    private fun inOrder(list: MutableList<T>, node: Node<T>?) {
+        node?.run {
+            left?.run { inOrder(list, this) }
+            list.add(this.data)
+            right?.run { inOrder(list, this) }
+        }
+    }
 
     // O(n)
     val postOrder: String
-        get() = mutableListOf<Int>()
-                .also { Node.postOrder(it, root) }
-                .joinToString(
-                        separator = ", ",
-                        prefix = "[",
-                        postfix = "]"
-                )
+        get() {
+            return mutableListOf<T>()
+                    .also { postOrder(it, root) }
+                    .joinToString(
+                            separator = ", ",
+                            prefix = "[",
+                            postfix = "]"
+                    )
+        }
+
+    private fun postOrder(list: MutableList<T>, node: Node<T>?) {
+        node?.run {
+            left?.run { postOrder(list, this) }
+            right?.run { postOrder(list, this) }
+            list.add(this.data)
+        }
+    }
 
 }
 
