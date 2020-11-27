@@ -1,23 +1,24 @@
 package com.github.roosale.ctcipractice.vii
 
-class LinkedList<T: Any>(
-    private var head: Node<T>? = null
-) {
+// singly linked list with head pointer
+class LinkedList<T : Any> {
 
-    class Node<T>(
-        var data: T,
-        var next: Node<T>? = null
+    private var head: Node<T>? = null
+
+    private class Node<T : Any>(
+            var data: T,
+            var next: Node<T>? = null
     )
 
     // O(1)
-    fun addFirst(data: T) {
+    fun prepend(data: T) {
         val node = Node(data)
         node.next = head
         head = node
     }
 
     // O(n)
-    fun addLast(data: T) {
+    fun append(data: T) {
         var pointer = head
 
         if (pointer == null) {
@@ -37,12 +38,12 @@ class LinkedList<T: Any>(
         val size = size
 
         if (index == 0) {
-            addFirst(data)
+            prepend(data)
             return
         }
 
         if (index == size) {
-            addLast(data)
+            append(data)
             return
         }
 
@@ -162,3 +163,21 @@ class LinkedList<T: Any>(
     }
 
 }
+
+/** linked list **/
+// can contain any type of data
+// elements can be unsorted or sorted
+// elements can be unique or duplicated
+// head pointer?
+// tail pointer?
+// singly vs doubly linked list (allows for backtracking)
+// circular linked list (tail node points to head node) can be singly or doubly
+
+/** linked list vs array **/
+// linked list
+//      - slow to get kth element O(n)
+//      - prepend fast O(1)
+//      - append depends, O(1) with tail pointer / O(n) without tail pointer
+// array
+//      - fast to get kth element O(1)
+//      - adds / deletes require reallocation
